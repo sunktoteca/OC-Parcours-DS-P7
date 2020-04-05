@@ -1,0 +1,10 @@
+https://www.kaggle.com/c/home-credit-default-risk/data
+
+
+Liens utiles :
+https://christophm.github.io/interpretable-ml-book/
+https://towardsdatascience.com/interpretability-in-machine-learning-70c30694a05f
+https://www.psiweb.org/docs/default-source/2018-psi-conference-posters/48-julie-jones.pdf
+https://openclassrooms.com/fr/courses/4525361-realisez-un-dashboard-avec-vos-donnees
+https://dash.plot.ly/installation?_ga=2.33133886.1415841438.1542826356-1321721347.1542826356
+https://docs.bokeh.org/en/latest/
