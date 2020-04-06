@@ -2,4 +2,5 @@ doc
 .ipynb_checkpoints/
 modelisation/data
 modelisation/kagglecode
+modelisation/__pycache__
 
