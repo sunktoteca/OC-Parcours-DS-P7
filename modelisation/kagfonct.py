@@ -3,6 +3,8 @@
 Created on Mon Apr  6 20:11:08 2020
 
 @author: Laure
+D'après le notebook :
+    https://www.kaggle.com/ogrellier/good-fun-with-ligthgbm/code
 """
 import gc
 import pandas as pd
@@ -13,7 +15,8 @@ def build_model_input(path):
     print('Buro bal shape : ', buro_bal.shape)
     
     print('transform to dummies')
-    buro_bal = pd.concat([buro_bal, pd.get_dummies(buro_bal.STATUS, prefix='buro_bal_status')], axis=1).drop('STATUS', axis=1)
+    buro_bal = pd.concat([buro_bal, pd.get_dummies(buro_bal.STATUS, prefix='buro_bal_status')], axis=1).\
+        drop('STATUS', axis=1)
     
     print('Counting buros')
     buro_counts = buro_bal[['SK_ID_BUREAU', 'MONTHS_BALANCE']].groupby('SK_ID_BUREAU').count()
@@ -121,10 +124,10 @@ def build_model_input(path):
     avg_inst = inst.groupby('SK_ID_CURR').mean()
     avg_inst.columns = ['inst_' + f_ for f_ in avg_inst.columns]
     
-    print('Read data and test')
+    print('Read data')
     data = pd.read_csv(path+'application_train.csv')
-    test = pd.read_csv(path+'application_test.csv')
-    print('Shapes : ', data.shape, test.shape)
+#    test = pd.read_csv(path+'application_test.csv')
+    print('Shapes : ', data.shape)
     
     y = data['TARGET']
     del data['TARGET']
@@ -135,24 +138,29 @@ def build_model_input(path):
     categorical_feats
     for f_ in categorical_feats:
         data[f_], indexer = pd.factorize(data[f_])
-        test[f_] = indexer.get_indexer(test[f_])
+#        test[f_] = indexer.get_indexer(test[f_])
         
     data = data.merge(right=avg_buro.reset_index(), how='left', on='SK_ID_CURR')
-    test = test.merge(right=avg_buro.reset_index(), how='left', on='SK_ID_CURR')
+#    test = test.merge(right=avg_buro.reset_index(), how='left', on='SK_ID_CURR')
     
     data = data.merge(right=avg_prev.reset_index(), how='left', on='SK_ID_CURR')
-    test = test.merge(right=avg_prev.reset_index(), how='left', on='SK_ID_CURR')
+#    test = test.merge(right=avg_prev.reset_index(), how='left', on='SK_ID_CURR')
     
     data = data.merge(right=avg_pos.reset_index(), how='left', on='SK_ID_CURR')
-    test = test.merge(right=avg_pos.reset_index(), how='left', on='SK_ID_CURR')
+#    test = test.merge(right=avg_pos.reset_index(), how='left', on='SK_ID_CURR')
     
     data = data.merge(right=avg_cc_bal.reset_index(), how='left', on='SK_ID_CURR')
-    test = test.merge(right=avg_cc_bal.reset_index(), how='left', on='SK_ID_CURR')
+#    test = test.merge(right=avg_cc_bal.reset_index(), how='left', on='SK_ID_CURR')
     
     data = data.merge(right=avg_inst.reset_index(), how='left', on='SK_ID_CURR')
-    test = test.merge(right=avg_inst.reset_index(), how='left', on='SK_ID_CURR')
+#    test = test.merge(right=avg_inst.reset_index(), how='left', on='SK_ID_CURR')
     
     del avg_buro, avg_prev
     gc.collect()
+    
+    # Certains caractères (qui viennent des catégories transformées en nom de colonnes par get_dummies)
+    # ne sont pas pris en compte par l'algorithme LGBM, donc on les supprime.
+    data.columns = ["".join (c if c.isalnum() else "_" for c in str(x)) for x in data.columns]
 
-    return data, test, y
+#    return data, test, y
+    return data, y
