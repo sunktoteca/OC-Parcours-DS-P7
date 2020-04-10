@@ -140,16 +140,16 @@ def build_model_input(path):
         data[f_], indexer = pd.factorize(data[f_])
 #        test[f_] = indexer.get_indexer(test[f_])
         
-    data = data.merge(right=avg_buro.reset_index(), how='left', on='SK_ID_CURR')
+    data = data.merge(right=avg_buro.reset_index(), how='left', on='SK_ID_CURR', suffixes=('', '_buro'))
 #    test = test.merge(right=avg_buro.reset_index(), how='left', on='SK_ID_CURR')
     
-    data = data.merge(right=avg_prev.reset_index(), how='left', on='SK_ID_CURR')
+    data = data.merge(right=avg_prev.reset_index(), how='left', on='SK_ID_CURR', suffixes=('', '_prev'))
 #    test = test.merge(right=avg_prev.reset_index(), how='left', on='SK_ID_CURR')
     
-    data = data.merge(right=avg_pos.reset_index(), how='left', on='SK_ID_CURR')
+    data = data.merge(right=avg_pos.reset_index(), how='left', on='SK_ID_CURR', suffixes=('', '_pos'))
 #    test = test.merge(right=avg_pos.reset_index(), how='left', on='SK_ID_CURR')
     
-    data = data.merge(right=avg_cc_bal.reset_index(), how='left', on='SK_ID_CURR')
+    data = data.merge(right=avg_cc_bal.reset_index(), how='left', on='SK_ID_CURR', suffixes=('', '_cc'))
 #    test = test.merge(right=avg_cc_bal.reset_index(), how='left', on='SK_ID_CURR')
     
     data = data.merge(right=avg_inst.reset_index(), how='left', on='SK_ID_CURR')
