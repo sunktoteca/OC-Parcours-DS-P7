@@ -4,4 +4,5 @@ modelisation/data
 modelisation/kagglecode
 modelisation/__pycache__
 sv
+modelisation/feature_importance.png
 
