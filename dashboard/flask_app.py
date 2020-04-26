@@ -1,68 +1,154 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Imports, constantes et chargement des données
+# Exemple
+# https://github.com/plotly/dash-sample-apps/blob/master/apps/dash-web-trader/app.py
+
+#################
+#### Imports #### 
+#################
+
+#import datetime
 
 from flask import Flask
+from flask import jsonify
+
+import requests
+import json
+
+import plotly.graph_objects as go
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_table
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
-import pandas as pd
+
+#import pandas as pd
+
+#################
+#### Constantes #### 
+#################
+URL_API = "http://laureP7.eu.pythonanywhere.com/api/clients"
+#URL_API = "http://localhost:8050/"
+
+PRENOMS_MASC = ["Gabriel", "Raphaël", "Léo", "Louis", "Lucas", "Adam", "Arthur", "Jules", "Hugo", "Maël",
+    "Liam", "Ethan", "Paul", "Nathan", "Gabin", "Sacha", "Noah", "Tom", "Mohamed", "Aaron"]
+PRENOMS_FEM = ["Emma", "Jade", "Louise", "Alice", "Chloé", "Lina", "Léa", "Rose", "Anna", "Mila", 
+    "Inès", "Ambre", "Julia", "Mia", "Léna", "Manon", "Juliette", "Lou", "Camille", "Zoé"]
+
+SEUIL = 0.3
 
 
+
+#################
+#### Serveur ####
+#################
 server = Flask(__name__)
-
-# @server.route('/')
-# def index():
-#     return 'Hello Flask app'
-
-#@app.route('/dashboard/')
-#def dashboard():
-#    return render_template("dashboard.html")
-
-
 app = dash.Dash(
     __name__,
     server=server,
     # routes_pathname_prefix='/dash/'
 )
 
+###################
+#### Fonctions ####
+###################
+# API Requests for news div
+#news_requests = requests.get(
+#    "https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=da8e2e705b914f9f86ed2e9692e66012"
+#)
+#
+## API Call to update news
+#def update_news():
+#    json_data = news_requests.json()["articles"]
+#    df = pd.DataFrame(json_data)
+#    df = pd.DataFrame(df[["title", "url"]])
+#    max_rows = 10
+#    return html.Div(
+#        children=[
+#            html.P(className="p-news", children="Headlines"),
+#            html.P(
+#                className="p-news float-right",
+#                children="Last update : "
+#                + datetime.datetime.now().strftime("%H:%M:%S"),
+#            ),
+#            html.Table(
+#                className="table-news",
+#                children=[
+#                    html.Tr(
+#                        children=[
+#                            html.Td(
+#                                children=[
+#                                    html.A(
+#                                        className="td-link",
+#                                        children=df.iloc[i]["title"],
+#                                        href=df.iloc[i]["url"],
+#                                        target="_blank",
+#                                    )
+#                                ]
+#                            )
+#                        ]
+#                    )
+#                    for i in range(min(len(df), max_rows))
+#                ],
+#            ),
+#        ]
+#    )
+
+
+def get_data():
+#    ref = requests.get(URL_API)
+#    data_ref = json.loads(ref.content.decode('utf-8'))["data"]
+
+    clients = requests.get(URL_API)
+    data_clients = json.loads(clients.content.decode('utf-8'))["data"]
+    
+    return data_clients
+
+
+##############################
+#### Variables et données ####
+##############################
+
 colors = {
 #    'background': '#1C1C1C',
     'text': 'red'
 }
 
-#liste_clients = [
-#    {"label": "12375", "value" :{"Prenom": "Joséphine", "Age":"24", "Score" : "0.1"}},
-#    {"label": "45672", "value" :{"Prenom": "Albert", "Age":"35", "Score" : "0.03"}},
-#    {"label": "753145", "value" :{"Prenom": "Carole", "Age":"42", "Score" : "0.71"}},
-#    {"label": "846384", "value" :{"Prenom": "Nathalie", "Age":"72", "Score" : "0.18"}},
-#    {"label": "49635", "value" :{"Prenom": "Gérald", "Age":"53", "Score" : "0.34"}},
-#]
-#liste_clients = [
-#    {"label": "12375", "value" :"Joséphine"},
-#    {"label": "45672", "value" :"Albert"},
-#    {"label": "753145", "value" :"Carole"},
-#    {"label": "846384", "value" :"Nathalie"},
-#    {"label": "49635", "value" :"Gérald"},
-#]
-liste_clients = [
-    {"label": "12375", "value" :"12375"},
-    {"label": "45672", "value" :"45672"},
-    {"label": "753145", "value" :"753145"},
-    {"label": "846384", "value" :"846384"},
-    {"label": "49635", "value" :"49635"},
-]
 
-data = [["12375", "Joséphine", "24", "0.1"],
-                 ["45672", "Albert", "35", "0.03"],
-                 ["753145", "Carole", "42","0.71"],
-                 ["846384", "Nathalie", "72", "0.18"],
-                 ["49635", "Gérald","53","0.34"]]
+dico_clients = get_data()
+liste_clients = []
+for i in list(dico_clients.keys()):
+    liste_clients.append({"label":i, "value":i})
 
-df = pd.DataFrame(data=data, columns = ["id", "prenom", "age", "score"])
+#fig = go.Figure(data=[go.Table(header=dict(values=['A Scores', 'B Scores']),
+#                 cells=dict(values=[[100, 90, 80, 90], [95, 85, 75, 95]]))
+#                     ])
+                                
+                                
+@server.route('/api/ref/')
+def ref():
+    with open('./data/ref.json') as json_file:
+        data = json.load(json_file)
+    return jsonify({
+      'status': 'ok', 
+      'data': data
+    })
+
+@server.route('/api/clients/')
+def clients():
+    with open('./data/clients.json') as json_file:
+        data = json.load(json_file)
+    return jsonify({
+      'status': 'ok', 
+      'data': data
+    })
+   
+######################
+#### Mise en page ####
+######################
 
 app.title = "Home Credit"
 
@@ -99,20 +185,16 @@ app.layout =  html.Div([
         ######################
         ### Données client ###
         ######################
-#        html.Div([
-#                html.Label("Numéro de client : "),
-#                dcc.Dropdown(id='no_client')
-#                ]),
         html.P("Numéro de client : ", style = {'margin':'20px 0 0 0'}),
         html.Div([
             dcc.Dropdown(
                 id='no_client',
                 options=liste_clients,
                 style={
-                       "margin" :"0px 20px 20px 0",
+                       "padding" :"0px 20px 0px 0px",
                        "width" : "10em"}
                 ),
-            html.Div(id='prenom_client',
+            html.Div(id='nom_client',
                      style={ 'textAlign' : 'center',
                             "padding" :"20px",
                             'display' :'table-cell'}
@@ -126,12 +208,67 @@ app.layout =  html.Div([
                      style={ 'textAlign' : 'center',
                             "padding" :"20px",
                             'display' :'table-cell'}
-            )
-
-           
+            ),
+            html.Div(id='type_contrat_client',
+                     style={ 'textAlign' : 'center',
+                            "padding" :"20px",
+                            'display' :'table-cell'}
+            ),
+            html.Div(id='montant_contrat_client',
+                     style={ 'textAlign' : 'center',
+                            "padding" :"20px",
+                            'display' :'table-cell'}
+            ),
+            html.Div(id='montant_annuite_client',
+                     style={ 'textAlign' : 'center',
+                            "padding" :"20px",
+                            'display' :'table-cell'}
+            ),
+            html.Div(id='revenu_client',
+                     style={ 'textAlign' : 'center',
+                            "padding" :"20px",
+                            'display' :'table-cell'}
+            ),
+            html.Div(id='duree_contrat_client',
+                     style={ 'textAlign' : 'center',
+                            "padding" :"20px",
+                            'display' :'table-cell'}
+            ),
+             html.Div(id='montant_achat_client',
+                     style={ 'textAlign' : 'center',
+                            "padding" :"20px",
+                            'display' :'table-cell'}
+            ),
+                       
             ],
-            style={'display':'table'}
+            style={'display':'table',
+                   'margin' : '0 0 50px 0'
+            }
         ),
+        ######################
+        ### Teableaux ###
+        ######################
+#        dash_table.DataTable(
+#            id='table',
+#            columns=[{"name": i, "id": i} for i in df.columns],
+#            data=df.to_dict('records'),
+#        ),
+#        html.Div([
+#                dcc.Graph(figure=fig)
+#        ]),
+#        html.Div([
+#            html.Div(
+#                className="div-news",
+#                children=[html.Div(id="news", children=update_news())],
+#                style={'display':'inline-block'}
+#            ),
+#            html.Div(
+#                className="div-news",
+#                children=[html.Div(id="news2", children=update_news())],
+#                style={'display':'inline-block'}
+#            )
+#        ]),
+
         ######################
         ### Graphes ###
         ######################
@@ -140,8 +277,9 @@ app.layout =  html.Div([
                         id='example',
                         figure={
                                 'data': [
-                                    {'x': [1, 2, 3, 4, 5], 'y': [9, 6, 2, 1, 5], 'type': 'line', 'name': 'Boats'},
-                                    {'x': [1, 2, 3, 4, 5], 'y': [8, 7, 2, 7, 3], 'type': 'bar', 'name': 'Cars'}
+                                    {'x': [1, 2], 'y': [1, 1], 'type': 'line', 'name': 'Boats', "line_width" :15, 'color' : 'green'},
+                                    {'x': [1.5, 2.5], 'y': [2,2], 'type': 'line', 'name': 'Cars', 'color' : 'red'},
+                                    {'x': [1.2], 'y': [1], 'marker': dict(color='blue', size=20, symbol="star-open")}
                                     ],
                                 'layout': {'title': 'Basic Dash Example'}
                                 }
@@ -154,92 +292,50 @@ app.layout =  html.Div([
              }
         )
 
+###################
+#### Callbacks ####
+###################
 
-
-
-#@app.callback(
-#    dash.dependencies.Output("no_client", "options"),
-#    [dash.dependencies.Input("no_client", "search_value")],
-#)
-#def update_options(search_value):
-#    if not search_value:
-#        raise PreventUpdate
-#    return [cl for cl in liste_clients if search_value in cl["label"]]
 
 @app.callback(
-    [Output('prenom_client', 'children'),
+    [Output('nom_client', 'children'),
      Output('age_client', 'children'),
-     Output('score_client', 'children')
+     Output('score_client', 'children'),
+     Output('type_contrat_client', 'children'),
+     Output('montant_contrat_client', 'children'),
+     Output('montant_annuite_client', 'children'),
+     Output('revenu_client', 'children'),
+     Output('duree_contrat_client', 'children'),
+     Output('montant_achat_client', 'children')
     ],
-    [dash.dependencies.Input('no_client', 'value')])
+    [Input('no_client', 'value')])
 def update_output(value):
     if not value:
         raise PreventUpdate
-    prenom, age, score = df.loc[df["id"]==value, ["prenom", "age", "score"]].values[0]
-    return prenom, age, score
+    this_client = dico_clients[value]
+    
+    genre = this_client["CODE_GENDER"]
+    # On ne connait pas le nom du client. on en invente un à partir d'une lsite
+    if genre == 0:
+        nom = "Mr " + PRENOMS_MASC[int(value)%len(PRENOMS_MASC)]
+    else :
+        nom = "Mme " + PRENOMS_FEM[int(value)%len(PRENOMS_FEM)]
+    
+    score = '{:.1f}'.format(this_client["score"]*100)
+    age = '{:.0f} ans'.format(-this_client["DAYS_BIRTH"]/365)
+    type_contrat = this_client["NAME_CONTRACT_TYPE"]
+    montant_contrat = this_client["AMT_CREDIT"]
+    montant_annuite = this_client["AMT_ANNUITY"]
+    revenu = this_client["AMT_INCOME_TOTAL"]
+    duree = f"{montant_contrat/montant_annuite*12:.1f} mois"
+    montant_achat = this_client["AMT_GOODS_PRICE"]
+
+    return nom, age, score, type_contrat, montant_contrat, montant_annuite, revenu, duree, montant_achat
 #        return 'Bonjour {}'.format(value)
 
-
-##### CODE COPIE - A SUPPRIMER ###        
-#options = [
-#    {"label": "New York City", "value": "NYC"},
-#    {"label": "Montreal", "value": "MTL"},
-#    {"label": "San Francisco", "value": "SF"},
-#]
-#
-#app.layout = html.Div(
-#    [
-#        html.Label(["Single dynamic Dropdown", dcc.Dropdown(id="my-dynamic-dropdown")]),
-#        html.Label(
-#            [
-#                "Multi dynamic Dropdown",
-#                dcc.Dropdown(id="my-multi-dynamic-dropdown", multi=True),
-#            ]
-#        ),
-#    ]
-#)
-#
-#
-#@app.callback(
-#    dash.dependencies.Output("my-dynamic-dropdown", "options"),
-#    [dash.dependencies.Input("my-dynamic-dropdown", "search_value")],
-#)
-#def update_options(search_value):
-#    if not search_value:
-#        raise PreventUpdate
-#    return [o for o in options if search_value in o["label"]]
-#
-#
-#app.layout = html.Div([
-#    dcc.Dropdown(
-#        id='demo-dropdown',
-#        options=[
-#            {'label': 'New York City', 'value': 'NYC'},
-#            {'label': 'Montreal', 'value': 'MTL'},
-#            {'label': 'San Francisco', 'value': 'SF'}
-#        ],
-#        value='NYC'
-#    ),
-#    html.Div(id='dd-output-container')
-#])
-#
-#
-#@app.callback(
-#    dash.dependencies.Output('dd-output-container', 'children'),
-#    [dash.dependencies.Input('demo-dropdown', 'value')])
-#def update_output(value):
-#    return 'You have selected "{}"'.format(value)
-
-#### FIN CODE COPIE ####
-
-#@app.callback(
-#    Output(component_id='info_client', component_property='children'),
-#    [Input(component_id='no_client', component_property='value')]
-#)
-#def update_value(input_data):
-#    return 'Bonjour  "{}"'.format(input_data)
-
-
+##############
+#### Main ####
+##############
 if __name__ == '__main__':
     app.run_server(debug=True)
 
