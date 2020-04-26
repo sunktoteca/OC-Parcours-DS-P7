@@ -272,19 +272,158 @@ app.layout =  html.Div([
         ######################
         ### Graphes ###
         ######################
-        html.Div(
+        html.Div([
                 dcc.Graph(
-                        id='example',
+                        id='example1',
+                        figure={
+                                'data': [
+                                    {'x': [1, 2], 'y': [1, 1], 'type': 'line', "line_width" :15, 'color' : 'green'},
+                                    {'x': [1.5, 2.5], 'y': [2,2], 'type': 'line',  'color' : 'red'},
+                                    {'x': [1.2], 'y': [1], 'marker': dict(color='blue', size=20, symbol="star-open")}
+                                    ],
+                                'layout': {
+                                        'title': 'Donnée 1',
+                                        "height": 300,
+                                        "showlegend":False,
+                                        #"margin" : "-20px",
+                                        #"padding" : '-30px',
+                                        "autosize":True,
+                                        'margin':dict(l=0,r=20),
+                                        "yaxis": {
+                                            "fixedrange": True,
+                                            "showline": False,
+                                            "zeroline": False,
+                                            "showgrid": False,
+                                            "showticklabels": False,
+                                            "ticks": "",
+                                            "color": "#a3a7b0",
+                                            },
+                                },
+                        },
+                        style={'width':'20%', 'display':'inline-block'}
+                        ),
+                dcc.Graph(
+                        id='example2',
                         figure={
                                 'data': [
                                     {'x': [1, 2], 'y': [1, 1], 'type': 'line', 'name': 'Boats', "line_width" :15, 'color' : 'green'},
                                     {'x': [1.5, 2.5], 'y': [2,2], 'type': 'line', 'name': 'Cars', 'color' : 'red'},
                                     {'x': [1.2], 'y': [1], 'marker': dict(color='blue', size=20, symbol="star-open")}
                                     ],
-                                'layout': {'title': 'Basic Dash Example'}
+                                'layout': {
+                                        'title': 'Donnée 2',
+                                        "height": 300,
+                                        "showlegend":False,
+                                        #"margin" : "-20px",
+                                        #"padding" : '-30px',
+                                        "autosize":True,
+                                        'margin':dict(l=20,r=20),
+                                        "yaxis": {
+                                            "fixedrange": True,
+                                            "showline": False,
+                                            "zeroline": False,
+                                            "showgrid": False,
+                                            "showticklabels": False,
+                                            "ticks": "",
+                                            "color": "#a3a7b0",
+                                            },
+
                                 }
+                        },
+                        style={'width':'20%', 'display':'inline-block'}
+                        ),
+                dcc.Graph(
+                        id='example3',
+                        figure={
+                                'data': [
+                                    {'x': [1, 2], 'y': [1, 1], 'type': 'line', 'name': 'Boats', "line_width" :15, 'color' : 'green'},
+                                    {'x': [1.5, 2.5], 'y': [2,2], 'type': 'line', 'name': 'Cars', 'color' : 'red'},
+                                    {'x': [1.2], 'y': [1], 'marker': dict(color='blue', size=20, symbol="star-open")}
+                                    ],
+                                'layout': {
+                                        'title': 'Donnée 3',
+                                        "height": 300,
+                                        "showlegend":False,
+                                        #"margin" : "-20px",
+                                        #"padding" : '-30px',
+                                        "autosize":True,
+                                        'margin':dict(l=20,r=20),
+                                        "yaxis": {
+                                            "fixedrange": True,
+                                            "showline": False,
+                                            "zeroline": False,
+                                            "showgrid": False,
+                                            "showticklabels": False,
+                                            "ticks": "",
+                                            "color": "#a3a7b0",
+                                            },
+
+                                },
+                        },
+                        style={'width':'20%', 'display':'inline-block'}
+                        ),
+                dcc.Graph(
+                        id='example4',
+                        figure={
+                                'data': [
+                                    {'x': [1, 2], 'y': [1, 1], 'type': 'line', 'name': 'Boats', "line_width" :15, 'color' : 'green'},
+                                    {'x': [1.5, 2.5], 'y': [2,2], 'type': 'line', 'name': 'Cars', 'color' : 'red'},
+                                    {'x': [1.2], 'y': [1], 'marker': dict(color='blue', size=20, symbol="star-open")}
+                                    ],
+                                'layout': {
+                                        'title': 'Donnée 4',
+                                        "height": 300,
+                                        "showlegend":False,
+                                        #"margin" : "-20px",
+                                        #"padding" : '-30px',
+                                        "autosize":True,
+                                        'margin':dict(l=20,r=20),
+                                        "yaxis": {
+                                            "fixedrange": True,
+                                            "showline": False,
+                                            "zeroline": False,
+                                            "showgrid": False,
+                                            "showticklabels": False,
+                                            "ticks": "",
+                                            "color": "#a3a7b0",
+                                            },
+
+                                },
+                        },
+                        style={'width':'20%', 'display':'inline-block'}
+                        ),
+                dcc.Graph(
+                        id='example5',
+                        figure={
+                                'data': [
+                                    {'x': [1, 2], 'y': [1, 1], 'type': 'line', 'name': 'Boats', "line_width" :15, 'color' : 'green'},
+                                    {'x': [1.5, 2.5], 'y': [2,2], 'type': 'line', 'name': 'Cars', 'color' : 'red'},
+                                    {'x': [1.2], 'y': [1], 'marker': dict(color='blue', size=20, symbol="star-open")}
+                                    ],
+                                'layout': {
+                                        'title': 'Donnée 5',
+                                        "height": 300,
+                                        "showlegend":False,
+                                        #"margin" : "-20px",
+                                        #"padding" : '-30px',
+                                        "autosize":True,
+                                        'margin':dict(l=20,r=0),
+                                        "yaxis": {
+                                            "fixedrange": True,
+                                            "showline": False,
+                                            "zeroline": False,
+                                            "showgrid": False,
+                                            "showticklabels": False,
+                                            "ticks": "",
+                                            "color": "#a3a7b0",
+                                            },
+
+                                },
+                        },
+                        style={'width':'20%', 'display':'inline-block'}
                         )
-                )      
+                ]),      
+
         ],
         style={
                 'maxWidth':'1140px',
@@ -321,8 +460,8 @@ def update_output(value):
     else :
         nom = "Mme " + PRENOMS_FEM[int(value)%len(PRENOMS_FEM)]
     
-    score = '{:.1f}'.format(this_client["score"]*100)
-    age = '{:.0f} ans'.format(-this_client["DAYS_BIRTH"]/365)
+    score = f'{this_client["score"]*100:.1f}'
+    age = f'{-this_client["DAYS_BIRTH"]/365:.0f} ans'
     type_contrat = this_client["NAME_CONTRACT_TYPE"]
     montant_contrat = this_client["AMT_CREDIT"]
     montant_annuite = this_client["AMT_ANNUITY"]
