@@ -16,12 +16,12 @@ from flask import jsonify
 import requests
 import json
 
-import plotly.graph_objects as go
+#import plotly.graph_objects as go
 
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_table
+#import dash_table
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 
@@ -30,6 +30,9 @@ from dash.exceptions import PreventUpdate
 #################
 #### Constantes #### 
 #################
+MODE = 'LOCAL'
+#MODE = 'SERVEUR'
+
 URL_API = "http://laureP7.eu.pythonanywhere.com/api/clients"
 #URL_API = "http://localhost:8050/"
 
@@ -55,55 +58,17 @@ app = dash.Dash(
 ###################
 #### Fonctions ####
 ###################
-# API Requests for news div
-#news_requests = requests.get(
-#    "https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=da8e2e705b914f9f86ed2e9692e66012"
-#)
-#
-## API Call to update news
-#def update_news():
-#    json_data = news_requests.json()["articles"]
-#    df = pd.DataFrame(json_data)
-#    df = pd.DataFrame(df[["title", "url"]])
-#    max_rows = 10
-#    return html.Div(
-#        children=[
-#            html.P(className="p-news", children="Headlines"),
-#            html.P(
-#                className="p-news float-right",
-#                children="Last update : "
-#                + datetime.datetime.now().strftime("%H:%M:%S"),
-#            ),
-#            html.Table(
-#                className="table-news",
-#                children=[
-#                    html.Tr(
-#                        children=[
-#                            html.Td(
-#                                children=[
-#                                    html.A(
-#                                        className="td-link",
-#                                        children=df.iloc[i]["title"],
-#                                        href=df.iloc[i]["url"],
-#                                        target="_blank",
-#                                    )
-#                                ]
-#                            )
-#                        ]
-#                    )
-#                    for i in range(min(len(df), max_rows))
-#                ],
-#            ),
-#        ]
-#    )
-
-
 def get_data():
 #    ref = requests.get(URL_API)
 #    data_ref = json.loads(ref.content.decode('utf-8'))["data"]
 
-    clients = requests.get(URL_API)
-    data_clients = json.loads(clients.content.decode('utf-8'))["data"]
+    if MODE == 'LOCAL':
+        with open('./data/clients.json') as json_file:
+            data_clients = json.load(json_file)
+
+    else :
+        clients = requests.get(URL_API)
+        data_clients = json.loads(clients.content.decode('utf-8'))["data"]
     
     return data_clients
 
@@ -245,188 +210,59 @@ app.layout =  html.Div([
                    'margin' : '0 0 50px 0'
             }
         ),
-        ######################
-        ### Teableaux ###
-        ######################
-#        dash_table.DataTable(
-#            id='table',
-#            columns=[{"name": i, "id": i} for i in df.columns],
-#            data=df.to_dict('records'),
-#        ),
-#        html.Div([
-#                dcc.Graph(figure=fig)
-#        ]),
-#        html.Div([
-#            html.Div(
-#                className="div-news",
-#                children=[html.Div(id="news", children=update_news())],
-#                style={'display':'inline-block'}
-#            ),
-#            html.Div(
-#                className="div-news",
-#                children=[html.Div(id="news2", children=update_news())],
-#                style={'display':'inline-block'}
-#            )
-#        ]),
 
         ######################
         ### Graphes ###
         ######################
+        html.H2("Zones de risque"),
+                dcc.Graph(
+                        id='risq_graph_1',
+                        style={'width':'20%', 'display':'inline-block', "height": 300}
+                        ),
+                 dcc.Graph(
+                        id='risq_graph_2',
+                        style={'width':'20%', 'display':'inline-block', "height": 300}
+                        ),
+                dcc.Graph(
+                        id='risq_graph_3',
+                        style={'width':'20%', 'display':'inline-block', "height": 300}
+                        ),
+                dcc.Graph(
+                        id='risq_graph_4',
+                        style={'width':'20%', 'display':'inline-block', "height": 300}
+                        ),
+                dcc.Graph(
+                        id='risq_graph_5',
+                        style={'width':'20%', 'display':'inline-block', "height": 300}
+                        ),               
+        html.H2("Critères favorables"),
         html.Div([
                 dcc.Graph(
-                        id='example1',
-                        figure={
-                                'data': [
-                                    {'x': [1, 2], 'y': [1, 1], 'type': 'line', "line_width" :15, 'color' : 'green'},
-                                    {'x': [1.5, 2.5], 'y': [2,2], 'type': 'line',  'color' : 'red'},
-                                    {'x': [1.2], 'y': [1], 'marker': dict(color='blue', size=20, symbol="star-open")}
-                                    ],
-                                'layout': {
-                                        'title': 'Donnée 1',
-                                        "height": 300,
-                                        "showlegend":False,
-                                        #"margin" : "-20px",
-                                        #"padding" : '-30px',
-                                        "autosize":True,
-                                        'margin':dict(l=0,r=20),
-                                        "yaxis": {
-                                            "fixedrange": True,
-                                            "showline": False,
-                                            "zeroline": False,
-                                            "showgrid": False,
-                                            "showticklabels": False,
-                                            "ticks": "",
-                                            "color": "#a3a7b0",
-                                            },
-                                },
-                        },
-                        style={'width':'20%', 'display':'inline-block'}
+                        id='fav_graph_1',
+                        style={'width':'20%', 'display':'inline-block', "height": 300}
                         ),
                 dcc.Graph(
-                        id='example2',
-                        figure={
-                                'data': [
-                                    {'x': [1, 2], 'y': [1, 1], 'type': 'line', 'name': 'Boats', "line_width" :15, 'color' : 'green'},
-                                    {'x': [1.5, 2.5], 'y': [2,2], 'type': 'line', 'name': 'Cars', 'color' : 'red'},
-                                    {'x': [1.2], 'y': [1], 'marker': dict(color='blue', size=20, symbol="star-open")}
-                                    ],
-                                'layout': {
-                                        'title': 'Donnée 2',
-                                        "height": 300,
-                                        "showlegend":False,
-                                        #"margin" : "-20px",
-                                        #"padding" : '-30px',
-                                        "autosize":True,
-                                        'margin':dict(l=20,r=20),
-                                        "yaxis": {
-                                            "fixedrange": True,
-                                            "showline": False,
-                                            "zeroline": False,
-                                            "showgrid": False,
-                                            "showticklabels": False,
-                                            "ticks": "",
-                                            "color": "#a3a7b0",
-                                            },
-
-                                }
-                        },
-                        style={'width':'20%', 'display':'inline-block'}
+                        id='fav_graph_2',
+                        style={'width':'20%', 'display':'inline-block', "height": 300}
                         ),
                 dcc.Graph(
-                        id='example3',
-                        figure={
-                                'data': [
-                                    {'x': [1, 2], 'y': [1, 1], 'type': 'line', 'name': 'Boats', "line_width" :15, 'color' : 'green'},
-                                    {'x': [1.5, 2.5], 'y': [2,2], 'type': 'line', 'name': 'Cars', 'color' : 'red'},
-                                    {'x': [1.2], 'y': [1], 'marker': dict(color='blue', size=20, symbol="star-open")}
-                                    ],
-                                'layout': {
-                                        'title': 'Donnée 3',
-                                        "height": 300,
-                                        "showlegend":False,
-                                        #"margin" : "-20px",
-                                        #"padding" : '-30px',
-                                        "autosize":True,
-                                        'margin':dict(l=20,r=20),
-                                        "yaxis": {
-                                            "fixedrange": True,
-                                            "showline": False,
-                                            "zeroline": False,
-                                            "showgrid": False,
-                                            "showticklabels": False,
-                                            "ticks": "",
-                                            "color": "#a3a7b0",
-                                            },
-
-                                },
-                        },
-                        style={'width':'20%', 'display':'inline-block'}
+                        id='fav_graph_3',
+                        style={'width':'20%', 'display':'inline-block', "height": 300}
                         ),
                 dcc.Graph(
-                        id='example4',
-                        figure={
-                                'data': [
-                                    {'x': [1, 2], 'y': [1, 1], 'type': 'line', 'name': 'Boats', "line_width" :15, 'color' : 'green'},
-                                    {'x': [1.5, 2.5], 'y': [2,2], 'type': 'line', 'name': 'Cars', 'color' : 'red'},
-                                    {'x': [1.2], 'y': [1], 'marker': dict(color='blue', size=20, symbol="star-open")}
-                                    ],
-                                'layout': {
-                                        'title': 'Donnée 4',
-                                        "height": 300,
-                                        "showlegend":False,
-                                        #"margin" : "-20px",
-                                        #"padding" : '-30px',
-                                        "autosize":True,
-                                        'margin':dict(l=20,r=20),
-                                        "yaxis": {
-                                            "fixedrange": True,
-                                            "showline": False,
-                                            "zeroline": False,
-                                            "showgrid": False,
-                                            "showticklabels": False,
-                                            "ticks": "",
-                                            "color": "#a3a7b0",
-                                            },
-
-                                },
-                        },
-                        style={'width':'20%', 'display':'inline-block'}
+                        id='fav_graph_4',
+                        style={'width':'20%', 'display':'inline-block', "height": 300}
                         ),
                 dcc.Graph(
-                        id='example5',
-                        figure={
-                                'data': [
-                                    {'x': [1, 2], 'y': [1, 1], 'type': 'line', 'name': 'Boats', "line_width" :15, 'color' : 'green'},
-                                    {'x': [1.5, 2.5], 'y': [2,2], 'type': 'line', 'name': 'Cars', 'color' : 'red'},
-                                    {'x': [1.2], 'y': [1], 'marker': dict(color='blue', size=20, symbol="star-open")}
-                                    ],
-                                'layout': {
-                                        'title': 'Donnée 5',
-                                        "height": 300,
-                                        "showlegend":False,
-                                        #"margin" : "-20px",
-                                        #"padding" : '-30px',
-                                        "autosize":True,
-                                        'margin':dict(l=20,r=0),
-                                        "yaxis": {
-                                            "fixedrange": True,
-                                            "showline": False,
-                                            "zeroline": False,
-                                            "showgrid": False,
-                                            "showticklabels": False,
-                                            "ticks": "",
-                                            "color": "#a3a7b0",
-                                            },
-
-                                },
-                        },
-                        style={'width':'20%', 'display':'inline-block'}
-                        )
+                        id='fav_graph_5',
+                        style={'width':'20%', 'display':'inline-block', "height": 300}
+                        ),
+               
                 ]),      
 
         ],
         style={
-                'maxWidth':'1140px',
+                'maxWidth':'80%',
                 'margin':'auto'
              }
         )
@@ -434,8 +270,6 @@ app.layout =  html.Div([
 ###################
 #### Callbacks ####
 ###################
-
-
 @app.callback(
     [Output('nom_client', 'children'),
      Output('age_client', 'children'),
@@ -445,7 +279,17 @@ app.layout =  html.Div([
      Output('montant_annuite_client', 'children'),
      Output('revenu_client', 'children'),
      Output('duree_contrat_client', 'children'),
-     Output('montant_achat_client', 'children')
+     Output('montant_achat_client', 'children'),
+     Output('fav_graph_1', 'figure'),
+     Output('fav_graph_2', 'figure'),
+     Output('fav_graph_3', 'figure'),
+     Output('fav_graph_4', 'figure'),
+     Output('fav_graph_5', 'figure'),
+     Output('risq_graph_1', 'figure'),
+     Output('risq_graph_2', 'figure'),
+     Output('risq_graph_3', 'figure'),
+     Output('risq_graph_4', 'figure'),
+     Output('risq_graph_5', 'figure'),     
     ],
     [Input('no_client', 'value')])
 def update_output(value):
@@ -454,7 +298,7 @@ def update_output(value):
     this_client = dico_clients[value]
     
     genre = this_client["CODE_GENDER"]
-    # On ne connait pas le nom du client. on en invente un à partir d'une lsite
+    # On ne connait pas le nom du client. on en invente un à partir d'une liste
     if genre == 0:
         nom = "Mr " + PRENOMS_MASC[int(value)%len(PRENOMS_MASC)]
     else :
@@ -468,9 +312,59 @@ def update_output(value):
     revenu = this_client["AMT_INCOME_TOTAL"]
     duree = f"{montant_contrat/montant_annuite*12:.1f} mois"
     montant_achat = this_client["AMT_GOODS_PRICE"]
-
-    return nom, age, score, type_contrat, montant_contrat, montant_annuite, revenu, duree, montant_achat
-#        return 'Bonjour {}'.format(value)
+    
+    figures_fav = []
+    figures_risq = []
+    for i in range(5):
+        for cas in range(2):
+            if cas == 0:
+                facteur = "favorable_" + str(i+1)
+            else :
+                facteur = "risque_"+str(i+1)
+            facteur_name = this_client[facteur]["name"]
+            fqb = this_client[facteur]["fqb"]
+            fqh = this_client[facteur]["fqh"]
+            fm = this_client[facteur]["fm"]
+            rqb = this_client[facteur]["rqb"]
+            rqh = this_client[facteur]["rqh"]
+            rm = this_client[facteur]["rm"]
+            client_value = this_client[facteur_name]
+            
+            data = [
+                {'x': [fqb, fqh], 'y': [1, 1], 'type': 'line', 'line' : dict(width=5, color='green'), 
+                     'marker': dict(size=5)},                   
+                {'x': [rqb, rqh], 'y': [2,2], 'type': 'line', 'line' : dict(width=5, color='red'),
+                     'marker': dict(size=5)},
+                {'x': [fm], 'y': [1], 'marker': dict(color='green', size=10, symbol="diamond")},
+                {'x': [rm], 'y': [2], 'marker': dict(color='red', size=10, symbol="diamond")},
+                {'x': [client_value], 'y': [cas+1], 'marker': dict(color='blue', size=20, symbol="star")}
+           ]
+            
+            layout = {
+                'title': facteur_name,
+#                "height": 300,
+                "showlegend":False,
+                "autosize":True,
+                'margin':dict(l=0,r=20),
+                "yaxis": {
+                    "fixedrange": True,
+                    "showline": False,
+                    "zeroline": False,
+                    "showgrid": False,
+                    "showticklabels": False,
+                    "ticks": "",
+                    "color": "#a3a7b0",
+                }
+            }
+            figure = dict(data = data, layout = layout)  
+            if cas == 0:
+                figures_fav.append(figure)
+            else:
+                figures_risq.append(figure)
+    
+    return nom, age, score, type_contrat, montant_contrat, montant_annuite, revenu, duree, montant_achat, \
+        figures_fav[0], figures_fav[1], figures_fav[2], figures_fav[3], figures_fav[4],\
+        figures_risq[0], figures_risq[1], figures_risq[2], figures_risq[3],figures_risq[4]
 
 ##############
 #### Main ####
