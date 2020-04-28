@@ -30,10 +30,10 @@ from dash.exceptions import PreventUpdate
 #################
 #### Constantes #### 
 #################
-MODE = 'LOCAL'
-#MODE = 'SERVEUR'
+#MODE = 'LOCAL'
+MODE = 'SERVEUR'
 
-URL_API = "http://laureP7.eu.pythonanywhere.com/api/clients"
+URL_API = "http://laure.eu.pythonanywhere.com/api/clients"
 #URL_API = "http://localhost:8050/"
 
 PRENOMS_MASC = ["Gabriel", "Raphaël", "Léo", "Louis", "Lucas", "Adam", "Arthur", "Jules", "Hugo", "Maël",
@@ -93,14 +93,14 @@ for i in list(dico_clients.keys()):
 #                     ])
                                 
                                 
-@server.route('/api/ref/')
-def ref():
-    with open('./data/ref.json') as json_file:
-        data = json.load(json_file)
-    return jsonify({
-      'status': 'ok', 
-      'data': data
-    })
+#@server.route('/api/ref/')
+#def ref():
+#    with open('./data/ref.json') as json_file:
+#        data = json.load(json_file)
+#    return jsonify({
+#      'status': 'ok', 
+#      'data': data
+#    })
 
 @server.route('/api/clients/')
 def clients():
@@ -150,6 +150,7 @@ app.layout =  html.Div([
         ######################
         ### Données client ###
         ######################
+        html.H2("Informations demandeur"),
         html.P("Numéro de client : ", style = {'margin':'20px 0 0 0'}),
         html.Div([
             dcc.Dropdown(
@@ -160,49 +161,34 @@ app.layout =  html.Div([
                        "width" : "10em"}
                 ),
             html.Div(id='nom_client',
-                     style={ 'textAlign' : 'center',
-                            "padding" :"20px",
-                            'display' :'table-cell'}
+#                     style={ 'textAlign' : 'center',
+#                            "padding" :"20px",
+#                            'display' :'table-cell'},
+                    className="info_client",
             ), 
             html.Div(id='age_client',
-                     style={ 'textAlign' : 'center',
-                            "padding" :"20px",
-                            'display' :'table-cell'}
+                    className="info_client",
             ),
             html.Div(id='score_client',
-                     style={ 'textAlign' : 'center',
-                            "padding" :"20px",
-                            'display' :'table-cell'}
+                    className="info_client",
             ),
             html.Div(id='type_contrat_client',
-                     style={ 'textAlign' : 'center',
-                            "padding" :"20px",
-                            'display' :'table-cell'}
+                    className="info_client",
             ),
             html.Div(id='montant_contrat_client',
-                     style={ 'textAlign' : 'center',
-                            "padding" :"20px",
-                            'display' :'table-cell'}
+                    className="info_client",
             ),
             html.Div(id='montant_annuite_client',
-                     style={ 'textAlign' : 'center',
-                            "padding" :"20px",
-                            'display' :'table-cell'}
+                    className="info_client",
             ),
             html.Div(id='revenu_client',
-                     style={ 'textAlign' : 'center',
-                            "padding" :"20px",
-                            'display' :'table-cell'}
+                    className="info_client",
             ),
             html.Div(id='duree_contrat_client',
-                     style={ 'textAlign' : 'center',
-                            "padding" :"20px",
-                            'display' :'table-cell'}
+                    className="info_client",
             ),
              html.Div(id='montant_achat_client',
-                     style={ 'textAlign' : 'center',
-                            "padding" :"20px",
-                            'display' :'table-cell'}
+                    className="info_client",
             ),
                        
             ],
@@ -215,50 +201,49 @@ app.layout =  html.Div([
         ### Graphes ###
         ######################
         html.H2("Zones de risque"),
-                dcc.Graph(
-                        id='risq_graph_1',
-                        style={'width':'20%', 'display':'inline-block', "height": 300}
-                        ),
-                 dcc.Graph(
-                        id='risq_graph_2',
-                        style={'width':'20%', 'display':'inline-block', "height": 300}
-                        ),
-                dcc.Graph(
-                        id='risq_graph_3',
-                        style={'width':'20%', 'display':'inline-block', "height": 300}
-                        ),
-                dcc.Graph(
-                        id='risq_graph_4',
-                        style={'width':'20%', 'display':'inline-block', "height": 300}
-                        ),
-                dcc.Graph(
-                        id='risq_graph_5',
-                        style={'width':'20%', 'display':'inline-block', "height": 300}
-                        ),               
+            dcc.Graph(
+                    id='risq_graph_1',
+                    #style={'width':'20%', 'display':'inline-block', "height": 300}
+                    className="facteur",
+                    ),
+             dcc.Graph(
+                    id='risq_graph_2',
+                    className="facteur",
+                    ),
+            dcc.Graph(
+                    id='risq_graph_3',
+                    className="facteur"
+                    ),
+            dcc.Graph(
+                    id='risq_graph_4',
+                    className="facteur",
+                    ),
+            dcc.Graph(
+                    id='risq_graph_5',
+                    className="facteur",
+                    ),               
         html.H2("Critères favorables"),
-        html.Div([
-                dcc.Graph(
-                        id='fav_graph_1',
-                        style={'width':'20%', 'display':'inline-block', "height": 300}
-                        ),
-                dcc.Graph(
-                        id='fav_graph_2',
-                        style={'width':'20%', 'display':'inline-block', "height": 300}
-                        ),
-                dcc.Graph(
-                        id='fav_graph_3',
-                        style={'width':'20%', 'display':'inline-block', "height": 300}
-                        ),
-                dcc.Graph(
-                        id='fav_graph_4',
-                        style={'width':'20%', 'display':'inline-block', "height": 300}
-                        ),
-                dcc.Graph(
-                        id='fav_graph_5',
-                        style={'width':'20%', 'display':'inline-block', "height": 300}
-                        ),
+            dcc.Graph(
+                    id='fav_graph_1',
+                    className="facteur",
+                    ),
+            dcc.Graph(
+                    id='fav_graph_2',
+                    className="facteur",
+                    ),
+            dcc.Graph(
+                    id='fav_graph_3',
+                    className="facteur",
+                    ),
+            dcc.Graph(
+                    id='fav_graph_4',
+                    className="facteur",
+                    ),
+            dcc.Graph(
+                    id='fav_graph_5',
+                    className="facteur",
+                    ),
                
-                ]),      
 
         ],
         style={
@@ -369,6 +354,7 @@ def update_output(value):
 ##############
 #### Main ####
 ##############
+# https://help.pythonanywhere.com/pages/502BadGateway
 if __name__ == '__main__':
     app.run_server(debug=True)
 
