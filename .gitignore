@@ -1,10 +1,13 @@
 doc
+sv
+inspiration
+00*
 .ipynb_checkpoints/
+modelisation/00*
 modelisation/data
 modelisation/kagglecode
 modelisation/__pycache__
-sv
 modelisation/feature_importance.png
 modelisation/y_pred_fbeta3_95.csv
-dashboard/old
+dashboard/00*
 
