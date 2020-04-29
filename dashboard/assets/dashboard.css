@@ -82,9 +82,12 @@
           font-weight: bold;
 		  color : black;
           line-height: 30px;
-      }	  
+      }	 
+	  label{
+		  font-size:18px;	
+	  }
 
-      .chart {
+  /*    .chart {
         height : 310px;
         width : 550px;
         margin: 5px auto 0 auto;
@@ -93,7 +96,7 @@
         background-color: #fcfcfc;
         display: inline-block;
         vertical-align: top;
-      }
+      }*/
 	  
 	  .facteur{
 		  display:inline-block;
@@ -104,17 +107,69 @@
 		  border-radius: 5px;
 		  
 	  }
-	  .info_client{
-		text-align:center;
-        padding: 20px;
-        display: table-cell;
+	  .info_client, .info_client_score{
+		text-align:center;    
+		display: inline-block;
+		box-shadow: 4px 4px 3px lightgrey;		
+	    background-color: #fcfcfc;
+		padding: 25px 20px 25px 20px;
+
+		
+
+	 }
+	 .info_client{
+		font-size:24px;	 
+		margin: 6px 10px 6px 10px;
+		vertical-align:bottom;	
+		height:50px;		
+	 }
+	 .info_client_score{
+		font-size:36px;
+		font-style:bold;	
+		/*padding: 22px 18px 22px 18px;*/
+		height:62px;
+		text-align:top;
+		vertical-align:bottom;	
+		line-height:36px;
+		margin: 0 10px 0 10px;
+		
+	 }
+	 .selection{
+		vertical-align:top;
+		text-align:left;
+        padding: 20px 20px 30px 20px;
+		display: inline-block;
 		box-shadow: 4px 4px 3px lightgrey;		
 	    background-color: #fcfcfc;
 		margin: 20px;
+		/*height:50px;*/
+		width:100%;
+		 
 	 }
-	  
+	 .bloc_selection, .bloc_info_client, .ligne_info_client{
+		vertical-align:top;
+		text-align:center;
+		display: inline-block;
+		margin: 20px;
+		width: 25%;	 
+	}
+	.bloc_selection{
+		width: 25%;
+	}
+	
+	.bloc_info_client{
+		width: 65%;	 
+	}
+	
+	.ligne_info_client{
+		width: 100%;
+		margin: 20px 0;		
+		padding: 10px 0;
+	}
+	
 
-      #actu{
+
+ /*     #actu{
         width:550px;
         height: 625px;
       }
@@ -195,3 +250,4 @@
         stroke : grey;
         shape-rendering: crispEdges;
       }
+	  */

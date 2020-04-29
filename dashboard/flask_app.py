@@ -30,8 +30,8 @@ from dash.exceptions import PreventUpdate
 #################
 #### Constantes #### 
 #################
-#MODE = 'LOCAL'
-MODE = 'SERVEUR'
+MODE = 'LOCAL'
+#MODE = 'SERVEUR'
 
 URL_API = "http://laure.eu.pythonanywhere.com/api/clients"
 #URL_API = "http://localhost:8050/"
@@ -41,9 +41,32 @@ PRENOMS_MASC = ["Gabriel", "Raphaël", "Léo", "Louis", "Lucas", "Adam", "Arthur
 PRENOMS_FEM = ["Emma", "Jade", "Louise", "Alice", "Chloé", "Lina", "Léa", "Rose", "Anna", "Mila", 
     "Inès", "Ambre", "Julia", "Mia", "Léna", "Manon", "Juliette", "Lou", "Camille", "Zoé"]
 
-SEUIL = 0.3
+SEUIL = 10
 
-
+#Liste des colonnes pour les colonnes sélectionnées par l'utilisateur
+#Pour l'instant ce sont les colonnes de la table principale (à l'exception de quelques unes)
+#A préciser avec le client.
+LISTE_COLONNES = ['NAME_CONTRACT_TYPE', 'CODE_GENDER', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY', 
+   'CNT_CHILDREN', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'AMT_ANNUITY', 'AMT_GOODS_PRICE', 'NAME_TYPE_SUITE', 
+   'NAME_INCOME_TYPE', 'NAME_EDUCATION_TYPE', 'NAME_FAMILY_STATUS', 'NAME_HOUSING_TYPE', 'REGION_POPULATION_RELATIVE', 
+   'DAYS_BIRTH', 'DAYS_EMPLOYED', 'DAYS_REGISTRATION', 'DAYS_ID_PUBLISH', 'OWN_CAR_AGE', 'FLAG_MOBIL', 'FLAG_EMP_PHONE',
+   'FLAG_WORK_PHONE', 'FLAG_CONT_MOBILE', 'FLAG_PHONE', 'FLAG_EMAIL', 'OCCUPATION_TYPE', 'CNT_FAM_MEMBERS', 
+   'REGION_RATING_CLIENT', 'REGION_RATING_CLIENT_W_CITY', 'WEEKDAY_APPR_PROCESS_START', 'HOUR_APPR_PROCESS_START', 
+   'REG_REGION_NOT_LIVE_REGION', 'REG_REGION_NOT_WORK_REGION', 'LIVE_REGION_NOT_WORK_REGION', 'REG_CITY_NOT_LIVE_CITY', 
+   'REG_CITY_NOT_WORK_CITY', 'LIVE_CITY_NOT_WORK_CITY', 'ORGANIZATION_TYPE', 'EXT_SOURCE_1', 'EXT_SOURCE_2', 
+   'EXT_SOURCE_3', 'APARTMENTS_AVG', 'BASEMENTAREA_AVG', 'YEARS_BEGINEXPLUATATION_AVG', 'YEARS_BUILD_AVG', 
+   'COMMONAREA_AVG', 'ELEVATORS_AVG', 'ENTRANCES_AVG', 'FLOORSMAX_AVG', 'FLOORSMIN_AVG', 'LANDAREA_AVG', 
+   'LIVINGAPARTMENTS_AVG', 'LIVINGAREA_AVG', 'NONLIVINGAPARTMENTS_AVG', 'NONLIVINGAREA_AVG', 'APARTMENTS_MODE', 
+   'BASEMENTAREA_MODE', 'YEARS_BEGINEXPLUATATION_MODE', 'YEARS_BUILD_MODE', 'COMMONAREA_MODE', 'ELEVATORS_MODE', 
+   'ENTRANCES_MODE', 'FLOORSMAX_MODE', 'FLOORSMIN_MODE', 'LANDAREA_MODE', 'LIVINGAPARTMENTS_MODE', 'LIVINGAREA_MODE', 
+   'NONLIVINGAPARTMENTS_MODE', 'NONLIVINGAREA_MODE', 'APARTMENTS_MEDI', 'BASEMENTAREA_MEDI', 
+   'YEARS_BEGINEXPLUATATION_MEDI', 'YEARS_BUILD_MEDI', 'COMMONAREA_MEDI', 'ELEVATORS_MEDI', 'ENTRANCES_MEDI', 
+   'FLOORSMAX_MEDI', 'FLOORSMIN_MEDI', 'LANDAREA_MEDI', 'LIVINGAPARTMENTS_MEDI', 'LIVINGAREA_MEDI', 
+   'NONLIVINGAPARTMENTS_MEDI', 'NONLIVINGAREA_MEDI', 'FONDKAPREMONT_MODE', 'HOUSETYPE_MODE', 'TOTALAREA_MODE', 
+   'WALLSMATERIAL_MODE', 'EMERGENCYSTATE_MODE', 'OBS_30_CNT_SOCIAL_CIRCLE', 'DEF_30_CNT_SOCIAL_CIRCLE', 
+   'OBS_60_CNT_SOCIAL_CIRCLE', 'DEF_60_CNT_SOCIAL_CIRCLE', 'DAYS_LAST_PHONE_CHANGE', 'AMT_REQ_CREDIT_BUREAU_HOUR', 
+   'AMT_REQ_CREDIT_BUREAU_DAY', 'AMT_REQ_CREDIT_BUREAU_WEEK', 'AMT_REQ_CREDIT_BUREAU_MON', 'AMT_REQ_CREDIT_BUREAU_QRT', 
+   'AMT_REQ_CREDIT_BUREAU_YEAR']
 
 #################
 #### Serveur ####
@@ -63,7 +86,7 @@ def get_data():
 #    data_ref = json.loads(ref.content.decode('utf-8'))["data"]
 
     if MODE == 'LOCAL':
-        with open('./data/clients.json') as json_file:
+        with open('../api/data/clients.json') as json_file:
             data_clients = json.load(json_file)
 
     else :
@@ -87,6 +110,9 @@ dico_clients = get_data()
 liste_clients = []
 for i in list(dico_clients.keys()):
     liste_clients.append({"label":i, "value":i})
+liste_colonnes = []
+for i in LISTE_COLONNES:
+    liste_colonnes.append({"label":i, "value":i})
 
 #fig = go.Figure(data=[go.Table(header=dict(values=['A Scores', 'B Scores']),
 #                 cells=dict(values=[[100, 90, 80, 90], [95, 85, 75, 95]]))
@@ -133,7 +159,7 @@ app.layout =  html.Div([
                                             'textAlign': 'center',
                                             'color': colors['text'],
                                             'width':'100%',
-                                            'margin':'auto'
+                                            'margin': 'auto'
 #                                            'display': 'inline-block'
                                             }),
                                 style={
@@ -151,51 +177,89 @@ app.layout =  html.Div([
         ### Données client ###
         ######################
         html.H2("Informations demandeur"),
-        html.P("Numéro de client : ", style = {'margin':'20px 0 0 0'}),
+        
         html.Div([
-            dcc.Dropdown(
-                id='no_client',
-                options=liste_clients,
-                style={
-                       "padding" :"0px 20px 0px 0px",
-                       "width" : "10em"}
-                ),
-            html.Div(id='nom_client',
-#                     style={ 'textAlign' : 'center',
-#                            "padding" :"20px",
-#                            'display' :'table-cell'},
-                    className="info_client",
-            ), 
-            html.Div(id='age_client',
-                    className="info_client",
+            html.Div([
+                html.Label("Numéro de client : "),
+                dcc.Dropdown(
+                    id='no_client',
+                    options=liste_clients,
+#                    style={
+#                          # "padding" :"0px 20px 0px 0px",
+#                           "width" : "10em",
+#                           "display":"inline_block"}
+                    ),
+                ],
+                    className="selection",
             ),
-            html.Div(id='score_client',
-                    className="info_client",
+            html.Div([
+                html.Label("Données complémentaires : "),
+                dcc.Dropdown(
+                    id='more_data',
+                    options=liste_colonnes,
+                    multi=True,
+                    value=['DAYS_BIRTH', 'AMT_INCOME_TOTAL', 'NAME_EDUCATION_TYPE', 'NAME_FAMILY_STATUS', 
+                            'AMT_GOODS_PRICE']
+#                    style={
+#                          # "padding" :"0px 20px 0px 0px",
+#                           "display":"inline_block"}
+                    ),
+                ],
+                    id='box_more_data',
+                    className="selection",
             ),
-            html.Div(id='type_contrat_client',
-                    className="info_client",
-            ),
-            html.Div(id='montant_contrat_client',
-                    className="info_client",
-            ),
-            html.Div(id='montant_annuite_client',
-                    className="info_client",
-            ),
-            html.Div(id='revenu_client',
-                    className="info_client",
-            ),
-            html.Div(id='duree_contrat_client',
-                    className="info_client",
-            ),
-             html.Div(id='montant_achat_client',
-                    className="info_client",
-            ),
-                       
             ],
-            style={'display':'table',
-                   'margin' : '0 0 50px 0'
-            }
+            className="bloc_selection",
         ),
+        html.Div([
+            html.Div([
+                html.Div(
+                        [html.P(id='nom_client',), html.Label("nom")],                        
+                        className="info_client",
+                        
+                ), 
+                html.Div([html.P(id='type_contrat_client'), html.Label("type contrat")], 
+                        className="info_client",
+                ),
+                html.Div([html.P(id='montant_contrat_client'), html.Label("montant contrat")], 
+                        className="info_client",
+                ),
+                html.Div([html.P(id='duree_contrat_client'), html.Label("duree contrat")], 
+                        className="info_client",
+                ),
+                html.Div([html.P(id='score_client', style={"color":"blue", "box-shadow": "4px 4px 3px lightgrey"}, ), 
+                          html.Label("score")
+                        ],
+                        id='box_score_client',
+                        className="info_client_score"                                        
+                ),
+                ],
+                className="ligne_info_client"
+            ),
+            html.Div([                                                             
+                html.Div([html.P(id='libre_1',), html.Label(" ", id="label_libre_1")],  
+                        className="info_client",
+                ),
+                html.Div([html.P(id='libre_2',), html.Label(id="label_libre_2")],  
+                        className="info_client",
+                ),
+                 html.Div([html.P(id='libre_3',), html.Label(id="label_libre_3")],  
+                        className="info_client",
+                ), 
+                 html.Div([html.P(id='libre_4',), html.Label(id="label_libre_4")],  
+                        className="info_client",
+                ), 
+                 html.Div([html.P(id='libre_5',), html.Label(id="label_libre_5")],  
+                        className="info_client",
+                ), 
+                          
+                ],
+                className="ligne_info_client"
+            ),
+            ],
+                className="bloc_info_client"
+        ),
+
 
         ######################
         ### Graphes ###
@@ -257,14 +321,20 @@ app.layout =  html.Div([
 ###################
 @app.callback(
     [Output('nom_client', 'children'),
-     Output('age_client', 'children'),
      Output('score_client', 'children'),
      Output('type_contrat_client', 'children'),
      Output('montant_contrat_client', 'children'),
-     Output('montant_annuite_client', 'children'),
-     Output('revenu_client', 'children'),
      Output('duree_contrat_client', 'children'),
-     Output('montant_achat_client', 'children'),
+     Output('libre_1', 'children'),
+     Output('libre_2', 'children'),
+     Output('libre_3', 'children'),
+     Output('libre_4', 'children'),
+     Output('libre_5', 'children'),
+     Output('label_libre_1', 'children'),
+     Output('label_libre_2', 'children'),
+     Output('label_libre_3', 'children'),
+     Output('label_libre_4', 'children'),
+     Output('label_libre_5', 'children'),
      Output('fav_graph_1', 'figure'),
      Output('fav_graph_2', 'figure'),
      Output('fav_graph_3', 'figure'),
@@ -276,27 +346,35 @@ app.layout =  html.Div([
      Output('risq_graph_4', 'figure'),
      Output('risq_graph_5', 'figure'),     
     ],
-    [Input('no_client', 'value')])
-def update_output(value):
-    if not value:
+    [Input('no_client', 'value'),
+     Input('more_data', 'value')])
+def update_output(no_client, more_data):
+    if not no_client:
         raise PreventUpdate
-    this_client = dico_clients[value]
+    this_client = dico_clients[no_client]
     
     genre = this_client["CODE_GENDER"]
     # On ne connait pas le nom du client. on en invente un à partir d'une liste
-    if genre == 0:
-        nom = "Mr " + PRENOMS_MASC[int(value)%len(PRENOMS_MASC)]
+    if genre == 'M':
+        nom = "Mr " + PRENOMS_MASC[int(no_client)%len(PRENOMS_MASC)]
     else :
-        nom = "Mme " + PRENOMS_FEM[int(value)%len(PRENOMS_FEM)]
+        nom = "Mme " + PRENOMS_FEM[int(no_client)%len(PRENOMS_FEM)]
     
     score = f'{this_client["score"]*100:.1f}'
-    age = f'{-this_client["DAYS_BIRTH"]/365:.0f} ans'
     type_contrat = this_client["NAME_CONTRACT_TYPE"]
     montant_contrat = this_client["AMT_CREDIT"]
     montant_annuite = this_client["AMT_ANNUITY"]
-    revenu = this_client["AMT_INCOME_TOTAL"]
-    duree = f"{montant_contrat/montant_annuite*12:.1f} mois"
-    montant_achat = this_client["AMT_GOODS_PRICE"]
+    duree = f'{montant_contrat/montant_annuite*12:.0f} mois'
+    montant_contrat = f'{montant_contrat:_.0f}'.replace("_", " ") + " €"
+    
+    libres=[]
+    labels_libres=[]
+    for info in more_data:
+        libres.append(this_client[info])
+        labels_libres.append(info)
+    while len(libres) < 5:
+        libres.append("")
+        labels_libres.append("")
     
     figures_fav = []
     figures_risq = []
@@ -347,9 +425,21 @@ def update_output(value):
             else:
                 figures_risq.append(figure)
     
-    return nom, age, score, type_contrat, montant_contrat, montant_annuite, revenu, duree, montant_achat, \
+    return nom, score, type_contrat, montant_contrat, duree,  \
+        libres[0], libres[1], libres[2], libres[3], libres[4],\
+        labels_libres[0], labels_libres[1],  labels_libres[2], labels_libres[3], labels_libres[4], \
         figures_fav[0], figures_fav[1], figures_fav[2], figures_fav[3], figures_fav[4],\
         figures_risq[0], figures_risq[1], figures_risq[2], figures_risq[3],figures_risq[4]
+
+
+@app.callback([Output('score_client', 'style'), Output('box_score_client', 'style')], 
+               [Input('score_client', 'children')])
+def update_style(value):
+    if float(value) > SEUIL:
+        return {'color': 'red'}, {"box-shadow": "4px 4px 3px tomato"}
+    else :
+        return {'color': 'green'}, {"box-shadow": "4px 4px 3px lightgreen"}
+    
 
 ##############
 #### Main ####
