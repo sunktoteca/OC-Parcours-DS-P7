@@ -87,16 +87,6 @@
 		  font-size:18px;	
 	  }
 
-  /*    .chart {
-        height : 310px;
-        width : 550px;
-        margin: 5px auto 0 auto;
-        padding : 5px;
-        border : 1px #CCC solid;
-        background-color: #fcfcfc;
-        display: inline-block;
-        vertical-align: top;
-      }*/
 	  
 	  .facteur{
 		  display:inline-block;
@@ -167,87 +157,3 @@
 		padding: 10px 0;
 	}
 	
-
-
- /*     #actu{
-        width:550px;
-        height: 625px;
-      }
-
-      @media (min-width: 1200px) {
-        #actu{
-          width:1115px;
-          height: inherit;
-        }
-      }
-
-      #nuage, #listeArticles {
-        width : 550px;
-        height : 310px;
-        display: inline-block;
-        vertical-align: top;
-        overflow: scroll;
-      }
-
-      #tableauArticles table {
-        margin-top:7px;
-        margin-left:5px;
-        border-collapse: collapse;
-        border: solid 1px #CCC;
-        width:100%;
-        color: #333;
-      }
-
-      #tableauArticles td {
-        padding : 5px;
-      } 
-
-      #tableauArticles tr:nth-child(odd) {
-        background-color: #EEE;
-      }
-
-      #tableauArticles tr {
-        border: solid 1px #DDD;
-      }
-
-      #tableauArticles .newspaper{
-        width:130px;
-      }
-
-      .chartContainer{
-        margin: 0 auto;
-      }
-
-      @media (min-width: 600px) {
-        .chartContainer{
-          width:570px;
-        }
-      }
-
-      @media (min-width: 1200px) {
-        .chartContainer{
-          width:1140px;
-        }
-      }
-
-      @media (min-width: 1800px) {
-        .chartContainer{
-          width:1710px;
-        }
-      }
-
-      .chartTitle {
-        margin: 2px auto;
-        text-align: center;
-        width: 100%;
-        display: inline-block;
-        color:#333;
-        font-size:18px;
-      }
-
-      .domain {
-        fill : None;
-        stroke : grey;
-        shape-rendering: crispEdges;
-      }
-	  */
