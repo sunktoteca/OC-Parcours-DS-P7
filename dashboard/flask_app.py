@@ -25,7 +25,8 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 
-#import pandas as pd
+import pandas as pd
+import numpy as np
 
 #################
 #### Constantes #### 
@@ -88,12 +89,15 @@ def get_data():
     if MODE == 'LOCAL':
         with open('../api/data/clients.json') as json_file:
             data_clients = json.load(json_file)
+        with open('../api/data/histo.json') as json_file:
+            data_histo = json.load(json_file)
 
     else :
         clients = requests.get(URL_API)
         data_clients = json.loads(clients.content.decode('utf-8'))["data"]
+        data_histo = data_clients
     
-    return data_clients
+    return data_clients, data_histo
 
 
 ##############################
@@ -106,13 +110,14 @@ colors = {
 }
 
 
-dico_clients = get_data()
+dico_clients, dico_histo = get_data()
 liste_clients = []
 for i in list(dico_clients.keys()):
     liste_clients.append({"label":i, "value":i})
 liste_colonnes = []
 for i in LISTE_COLONNES:
     liste_colonnes.append({"label":i, "value":i})
+df_histo = pd.DataFrame(dico_histo)
 
 #fig = go.Figure(data=[go.Table(header=dict(values=['A Scores', 'B Scores']),
 #                 cells=dict(values=[[100, 90, 80, 90], [95, 85, 75, 95]]))
@@ -307,26 +312,81 @@ app.layout =  html.Div([
                     id='fav_graph_5',
                     className="facteur",
                     ),
-        html.H2("Brouillon"),
-        dcc.Graph(
-            id='example-graph',
-            figure={
-                'data': [
-                    {'x': ['D', 'E', 'F'], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
-                    {'x': ['D', 'E', 'F'], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
+        html.Div([
+            html.H2("Répartition des scores"),
+
+            html.Div([
+                html.Div([
+                    html.Label("Homme/Femme/XNA : "),
+                    dcc.Checklist(
+                        options=[
+                            {'label': 'Homme', 'value': 'M'},
+                            {'label': 'Femme', 'value': 'F'},
+                            {'label': 'XNA', 'value': 'XNA'}
+                        ],
+                        value=['M', 'F', 'XNA'],
+                        id="ckl_HF",
+                    )
+                    ],                    
+                    className="selection",
+                ),
+#                html.Div([
+#                    html.Label("Niveau d'études: "),
+#                    dcc.Checklist(
+#                        options=[
+#                            {'label': 'Lower secondary', 'value': 'LS'},
+#                            {'label': 'Secondary / secondary special', 'value': 'S'},
+#                            {'label': 'Incomplete higher', 'value': 'IH'},
+#                            {'label': 'Higher education', 'value': 'H'},
+#                            {'label': 'Academic degree', 'value': 'A'},
+#                        ],
+#                        value=['LS', 'S', 'IH', 'H', 'A'],
+#                        id="ckl_etudes",
+#                    )  ,
+#                    ],
+#                        className="selection",
+#                ),
+                html.Div([
+                    html.Label("Revenu annuel: "),                        
+                    dcc.RangeSlider(
+                        min=0,
+                        max=300_000,
+                        step=1000,
+                        value = [0, 300_000],
+                        tooltip={'placement':'top'},
+                        marks={
+                            0: {'label': '0 °C'},
+                            100_000: {'label': '100 000'},
+                            200_000: {'label': '200 000'},
+                            300_000: {'label': '>300 000'}
+                        },
+                        id="slider_revenu",
+                    )
                 ],
-                'layout': {
-                    'title': 'Dash Data Visualization'
-                }
-            }
-        )
+                    className="selection",
+                ),
+                ],
+                className="bloc_selection",
+                ),
+    
+            html.Div([                                                             
+                dcc.Graph(
+                    id='graph_score_distrib',
+                ),
+            ],
+                className="bloc_info_client"
+            ),
+
+
+        ]),
                
 
         ],
-        style={
-                'maxWidth':'80%',
-                'margin':'auto'
-             }
+        id='layout',
+#        style={
+#                'maxWidth':'80%',
+#                'margin':'auto'
+#             }
         )
 
 ###################
@@ -464,12 +524,58 @@ def update_style(value):
         return {'color': 'red'}, {"box-shadow": "4px 4px 3px tomato"}
     else :
         return {'color': 'green'}, {"box-shadow": "4px 4px 3px lightgreen"}
+
+@app.callback(
+    Output('graph_score_distrib', 'figure'),
+    [Input('ckl_HF', 'value'),
+     Input('slider_revenu', 'value')])
+def update_histo(ckl_HF, slider_revenu):
+#    cond = f"(df_histo['CODE_GENDER'].apply(lambda x: x in {ckl_HF}))"
+#    cond = cond + f" & (df_histo['AMT_INCOME_TOTAL']>= {slider_revenu[0]})"
+#    if slider_revenu[1] < 300_000:
+#        cond = cond + f" & (df_histo['AMT_INCOME_TOTAL']<= {slider_revenu[1]})"
+    query = f"CODE_GENDER in {ckl_HF}"
+    query += f" and AMT_INCOME_TOTAL >= {slider_revenu[0]}"
+    if slider_revenu[1] < 300_000:
+        query += f" and AMT_INCOME_TOTAL <= {slider_revenu[1]}"
+#    app.logger.info('query', query) 
+    array, bins = np.histogram(df_histo.query(query)["score"], bins=50)
+    data = [
+        {'x': bins, 'y': array, 'type': 'bar'},                   
+    ]
+    layout = {
+                'title': {"text": "Répartition des scores",
+                          "font": {"size":24}},
+                "height": 300,
+                "showlegend":False,
+                "autosize":True,
+#                'margin':dict(l=0,r=20),
+                "yaxis": {
+#                    "fixedrange": True,
+                    "showline": True,
+                    "zeroline": True,
+#                    "showgrid": False,
+#                    "showticklabels": False,
+#                    "ticks": "",
+#                    "color": "#a3a7b0",
+                },
+                "xaxis":{
+#                    "zeroline" : False,
+                     "ticks":np.arange(0,0.8,0.02),
+                     "showticklabels": True,
+                     "fixedrange": True,
+                     "range": [-0.01, 1]
+                }
+    }
+
+    figure = dict(data = data, layout = layout)  
+    return figure
+    
     
 
 ##############
 #### Main ####
 ##############
-# https://help.pythonanywhere.com/pages/502BadGateway
 if __name__ == '__main__':
     app.run_server(debug=True)
 

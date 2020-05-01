@@ -131,7 +131,7 @@
 		display: inline-block;
 		box-shadow: 4px 4px 3px lightgrey;		
 	    background-color: #fcfcfc;
-		margin: 20px;
+		margin: 20px 0;
 		/*height:50px;*/
 		width:100%;
 		 
@@ -154,5 +154,15 @@
 		width: 100%;
 		margin: 20px 0;		
 		padding: 10px 0;
+	}
+	
+	#layout{
+		width:80%;
+		margin : auto;
+		
+	}
+	
+	#graph_score_distrib{
+		margin-left:20px;
 	}
 	
