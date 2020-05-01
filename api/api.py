@@ -11,10 +11,13 @@ app = Flask(__name__)
 @app.route('/api/clients/')
 def clients():
     with open('./data/clients.json') as json_file:
-        data = json.load(json_file)
+        clients = json.load(json_file)
+    with open('./data/histo.json') as json_file:
+        histo = json.load(json_file)
     return jsonify({
       'status': 'ok', 
-      'data': data
+      'clients': clients,
+      'histo': histo
     })
    
 
