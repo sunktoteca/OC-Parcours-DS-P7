@@ -136,9 +136,14 @@ def build_model_input(path):
         f for f in data.columns if data[f].dtype == 'object'
     ]
     categorical_feats
+    indexers={}
     for f_ in categorical_feats:
         data[f_], indexer = pd.factorize(data[f_])
+        indexers[f_]=indexer
 #        test[f_] = indexer.get_indexer(test[f_])
+    data["DAYS_BIRTH"]=-data["DAYS_BIRTH"]
+    data["DAYS_EMPLOYED"]=-data["DAYS_EMPLOYED"]
+    data.loc[data["DAYS_EMPLOYED"]<0, "DAYS_EMPLOYED"] = np.nan
         
     data = data.merge(right=avg_buro.reset_index(), how='left', on='SK_ID_CURR', suffixes=('', '_buro'))
 #    test = test.merge(right=avg_buro.reset_index(), how='left', on='SK_ID_CURR')
@@ -163,4 +168,4 @@ def build_model_input(path):
     data.columns = ["".join (c if c.isalnum() else "_" for c in str(x)) for x in data.columns]
 
 #    return data, test, y
-    return data, y
+    return data, y, indexers
