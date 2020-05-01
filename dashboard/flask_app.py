@@ -539,7 +539,7 @@ def update_histo(ckl_HF, slider_revenu):
     if slider_revenu[1] < 300_000:
         query += f" and AMT_INCOME_TOTAL <= {slider_revenu[1]}"
 #    app.logger.info('query', query) 
-    array, bins = np.histogram(df_histo.query(query)["score"], bins=50)
+    array, bins = np.histogram(df_histo.query(query)["score"], bins=50, range=(0,100))
     data = [
         {'x': bins, 'y': array, 'type': 'bar'},                   
     ]
@@ -561,10 +561,13 @@ def update_histo(ckl_HF, slider_revenu):
                 },
                 "xaxis":{
 #                    "zeroline" : False,
-                     "ticks":np.arange(0,0.8,0.02),
+                     "nticks":51, #np.arange(51),
+                     "tick0":0,
+                     "dtick":2,
                      "showticklabels": True,
                      "fixedrange": True,
-                     "range": [-0.01, 1]
+                     "range": [0, 100],
+                     "title":"score",
                 }
     }
 
