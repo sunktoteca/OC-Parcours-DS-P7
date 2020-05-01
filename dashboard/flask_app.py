@@ -285,7 +285,7 @@ app.layout =  html.Div([
             dcc.Graph(
                     id='risq_graph_5',
                     className="facteur",
-                    ),               
+                    ),  
         html.H2("Critères favorables"),
             dcc.Graph(
                     id='fav_graph_1',
@@ -307,6 +307,19 @@ app.layout =  html.Div([
                     id='fav_graph_5',
                     className="facteur",
                     ),
+        html.H2("Brouillon"),
+        dcc.Graph(
+            id='example-graph',
+            figure={
+                'data': [
+                    {'x': ['D', 'E', 'F'], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
+                    {'x': ['D', 'E', 'F'], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
+                ],
+                'layout': {
+                    'title': 'Dash Data Visualization'
+                }
+            }
+        )
                
 
         ],
@@ -385,24 +398,34 @@ def update_output(no_client, more_data):
             else :
                 facteur = "risque_"+str(i+1)
             facteur_name = this_client[facteur]["name"]
-            fqb = this_client[facteur]["fqb"]
-            fqh = this_client[facteur]["fqh"]
-            fm = this_client[facteur]["fm"]
-            rqb = this_client[facteur]["rqb"]
-            rqh = this_client[facteur]["rqh"]
-            rm = this_client[facteur]["rm"]
-            client_value = this_client[facteur_name]
-            
-            data = [
-                {'x': [fqb, fqh], 'y': [1, 1], 'type': 'line', 'line' : dict(width=5, color='green'), 
-                     'marker': dict(size=5)},                   
-                {'x': [rqb, rqh], 'y': [2,2], 'type': 'line', 'line' : dict(width=5, color='red'),
-                     'marker': dict(size=5)},
-                {'x': [fm], 'y': [1], 'marker': dict(color='green', size=10, symbol="diamond")},
-                {'x': [rm], 'y': [2], 'marker': dict(color='red', size=10, symbol="diamond")},
-                {'x': [client_value], 'y': [cas+1], 'marker': dict(color='blue', size=20, symbol="star")}
-           ]
-            
+            if this_client[facteur]["type"]=="quant":
+                fqb = this_client[facteur]["fqb"]
+                fqh = this_client[facteur]["fqh"]
+                fm = this_client[facteur]["fm"]
+                rqb = this_client[facteur]["rqb"]
+                rqh = this_client[facteur]["rqh"]
+                rm = this_client[facteur]["rm"]
+                client_value = this_client[facteur_name]
+                data = [
+                    {'x': [fqb, fqh], 'y': [1, 1], 'type': 'line', 'line' : dict(width=5, color='green'), 
+                         'marker': dict(size=5)},                   
+                    {'x': [rqb, rqh], 'y': [2,2], 'type': 'line', 'line' : dict(width=5, color='red'),
+                         'marker': dict(size=5)},
+                    {'x': [fm], 'y': [1], 'marker': dict(color='green', size=10, symbol="diamond")},
+                    {'x': [rm], 'y': [2], 'marker': dict(color='red', size=10, symbol="diamond")},
+                    {'x': [client_value], 'y': [cas+1], 'marker': dict(color='blue', size=20, symbol="star")}
+               ]
+            else:
+                x = this_client[facteur]["x"]
+                y0 = this_client[facteur]["y0"]
+                y1 = this_client[facteur]["y1"]
+                client_value = this_client[facteur_name]
+                data = [
+                    {'x': x, 'y': y0, 'type': 'bar', 'marker': dict(color='green')},
+                    {'x': x, 'y': y1, 'type': 'bar', 'marker': dict(color='red')},
+                    {'x': [client_value], 'y':[1], 'marker': dict(color='blue', size=20, symbol="star")}
+               ]
+                
             layout = {
                 'title': facteur_name,
 #                "height": 300,
@@ -417,7 +440,9 @@ def update_output(no_client, more_data):
                     "showticklabels": False,
                     "ticks": "",
                     "color": "#a3a7b0",
-                }
+                },
+                "xaxis":{
+                    "zeroline" : False,}
             }
             figure = dict(data = data, layout = layout)  
             if cas == 0:
