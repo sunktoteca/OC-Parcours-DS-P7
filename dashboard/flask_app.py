@@ -11,7 +11,8 @@
 #import datetime
 
 from flask import Flask
-from flask import jsonify
+#from flask import jsonify
+from flask import render_template
 
 import requests
 import json
@@ -31,8 +32,8 @@ import numpy as np
 #################
 #### Constantes #### 
 #################
-MODE = 'LOCAL'
-#MODE = 'SERVEUR'
+#MODE = 'LOCAL'
+MODE = 'SERVEUR'
 
 URL_API = "http://laure.eu.pythonanywhere.com/api/clients"
 #URL_API = "http://localhost:8050/"
@@ -79,12 +80,12 @@ app = dash.Dash(
     # routes_pathname_prefix='/dash/'
 )
 
+
+
 ###################
 #### Fonctions ####
 ###################
 def get_data():
-#    ref = requests.get(URL_API)
-#    data_ref = json.loads(ref.content.decode('utf-8'))["data"]
 
     if MODE == 'LOCAL':
         with open('../api/data/clients.json') as json_file:
@@ -93,11 +94,32 @@ def get_data():
             data_histo = json.load(json_file)
 
     else :
-        clients = requests.get(URL_API)
-        data_clients = json.loads(clients.content.decode('utf-8'))["data"]
-        data_histo = data_clients
+        app.logger.info('Before') 
+        server.logger.info('server logger') 
+        response = requests.get(URL_API)
+        if response.status_code != 200:
+#            raise ValueError(response)  #a remettre si on utilise le errorhandler
+            raise ValueError(response.status_code, response.reason, response.url)
+           
+        content = json.loads(response.content.decode('utf-8'))
+        data_clients = content["clients"]
+        data_histo = content["histo"]
     
     return data_clients, data_histo
+
+#Pour l'instant ceci n'est pas utilisé car si il y a une erreur sur get_data, 
+#elle se produit avant la creation de app.layout et donc avant que le serveur ne soit
+#reellement lancé. Ce serait utilisé si l'erreur se produisait dans une route définie
+# par @serveur.route("/").
+# Mais on ne peut pas mettre app.layout dans une route. 
+# Il faudrait revoir l'architecture
+# En attendant, le message d'erreur s'affiche dans la console.
+@server.errorhandler(ValueError)
+def erreurExcept(error):
+    return render_template("erreur.html", 
+                           no_erreur=error.args[0].status_code, 
+                           cause_erreur=error.args[0].reason,
+                           url=error.args[0].url)
 
 
 ##############################
@@ -110,6 +132,7 @@ colors = {
 }
 
 
+
 dico_clients, dico_histo = get_data()
 liste_clients = []
 for i in list(dico_clients.keys()):
@@ -119,29 +142,7 @@ for i in LISTE_COLONNES:
     liste_colonnes.append({"label":i, "value":i})
 df_histo = pd.DataFrame(dico_histo)
 
-#fig = go.Figure(data=[go.Table(header=dict(values=['A Scores', 'B Scores']),
-#                 cells=dict(values=[[100, 90, 80, 90], [95, 85, 75, 95]]))
-#                     ])
-                                
-                                
-#@server.route('/api/ref/')
-#def ref():
-#    with open('./data/ref.json') as json_file:
-#        data = json.load(json_file)
-#    return jsonify({
-#      'status': 'ok', 
-#      'data': data
-#    })
 
-@server.route('/api/clients/')
-def clients():
-    with open('./data/clients.json') as json_file:
-        data = json.load(json_file)
-    return jsonify({
-      'status': 'ok', 
-      'data': data
-    })
-   
 ######################
 #### Mise en page ####
 ######################
@@ -389,9 +390,9 @@ app.layout =  html.Div([
 #             }
         )
 
-###################
-#### Callbacks ####
-###################
+#############################
+#### Callbacks dashbaord ####
+#############################
 @app.callback(
     [Output('nom_client', 'children'),
      Output('score_client', 'children'),
@@ -580,5 +581,5 @@ def update_histo(ckl_HF, slider_revenu):
 #### Main ####
 ##############
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
 
