@@ -35,7 +35,7 @@ import numpy as np
 #MODE = 'LOCAL'
 MODE = 'SERVEUR'
 
-URL_API = "http://laure.eu.pythonanywhere.com/api/clients"
+URL_API = "http://laure.eu.pythonanywhere.com/api/clientsn"
 #URL_API = "http://localhost:8050/"
 
 PRENOMS_MASC = ["Gabriel", "Raphaël", "Léo", "Louis", "Lucas", "Adam", "Arthur", "Jules", "Hugo", "Maël",
@@ -98,8 +98,9 @@ def get_data():
         server.logger.info('server logger') 
         response = requests.get(URL_API)
         if response.status_code != 200:
+            response.raise_for_status()
 #            raise ValueError(response)  #a remettre si on utilise le errorhandler
-            raise ValueError(response.status_code, response.reason, response.url)
+ #           raise ValueError(response.status_code, response.reason, response.url)
            
         content = json.loads(response.content.decode('utf-8'))
         data_clients = content["clients"]
