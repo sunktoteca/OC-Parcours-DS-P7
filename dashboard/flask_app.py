@@ -35,7 +35,7 @@ import numpy as np
 #MODE = 'LOCAL'
 MODE = 'SERVEUR'
 
-URL_API = "http://laure.eu.pythonanywhere.com/api/clientsn"
+URL_API = "http://laure.eu.pythonanywhere.com/api/clients"
 #URL_API = "http://localhost:8050/"
 
 PRENOMS_MASC = ["Gabriel", "Raphaël", "Léo", "Louis", "Lucas", "Adam", "Arthur", "Jules", "Hugo", "Maël",
