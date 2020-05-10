@@ -94,8 +94,8 @@ def get_data():
             data_histo = json.load(json_file)
 
     else :
-        app.logger.info('Before') 
-        server.logger.info('server logger') 
+#        app.logger.info('Before') 
+#        server.logger.info('server logger') 
         response = requests.get(URL_API)
         if response.status_code != 200:
             response.raise_for_status()
@@ -115,12 +115,12 @@ def get_data():
 # Mais on ne peut pas mettre app.layout dans une route. 
 # Il faudrait revoir l'architecture
 # En attendant, le message d'erreur s'affiche dans la console.
-@server.errorhandler(ValueError)
-def erreurExcept(error):
-    return render_template("erreur.html", 
-                           no_erreur=error.args[0].status_code, 
-                           cause_erreur=error.args[0].reason,
-                           url=error.args[0].url)
+#@server.errorhandler(ValueError)
+#def erreurExcept(error):
+#    return render_template("erreur.html", 
+#                           no_erreur=error.args[0].status_code, 
+#                           cause_erreur=error.args[0].reason,
+#                           url=error.args[0].url)
 
 
 ##############################
@@ -235,7 +235,7 @@ app.layout =  html.Div([
                         className="info_client",
                 ),
                 html.Div([html.P(id='score_client', style={"color":"blue", "box-shadow": "4px 4px 3px lightgrey"}, ), 
-                          html.Label("score")
+                          html.Label("score (/100)")
                         ],
                         id='box_score_client',
                         className="info_client_score"                                        
